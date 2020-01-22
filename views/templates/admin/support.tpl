@@ -1,5 +1,4 @@
-<?php
-/**
+{*
 * 2007-2020 PrestaShop
 *
 * NOTICE OF LICENSE
@@ -22,14 +21,18 @@
 *  @copyright 2007-2020 PrestaShop SA
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
-*/
+*}
 
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache');
-
-header('Location: ../');
-exit;
+<div class="panel">
+    <h3><i class="icon icon-question-circle"></i> {l s='Support' mod='minimalpurchasepostcode'}</h3>
+    <p>
+        {l s='If you have any question or bug report, or suggestions to improve my module, contact me :' mod='minimalpurchasepostcode'}<br/>
+        <a href="{$support_url|escape:'htmlall':'UTF-8'}" target="_blank">{$support_url|escape:'htmlall':'UTF-8'}</a>
+    </p>
+    <p>
+        {l s='I will do my best to help you with your module.' mod='minimalpurchasepostcode'}
+    </p>
+    <p>
+        {l s='If you found this module was useful, please leave a rating on Prestashop Addons :)' mod='minimalpurchasepostcode'}
+    </p>
+</div>

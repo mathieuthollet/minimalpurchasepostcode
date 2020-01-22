@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 PrestaShop
+ * 2007-2020 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA
+ * @copyright 2007-2020 PrestaShop SA
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
@@ -33,7 +33,7 @@ class MinimalPurchasePostCode extends Module
     private $message = '';
 
     protected $config_form = false;
-    protected $support_url = 'https://addons.prestashop.com/contact-form.php?id_product=30813';
+    protected $support_url = 'https://addons.prestashop.com/contact-form.php?id_product=47869';
 
     public function __construct()
     {
@@ -43,7 +43,7 @@ class MinimalPurchasePostCode extends Module
         $this->author = 'Mathieu Thollet';
         $this->need_instance = 0;
         $this->bootstrap = true;
-        $this->module_key = '';
+        $this->module_key = '761116d5a9a1e3f97cba1ce82d8ba11c';
 
         parent::__construct();
 
@@ -53,7 +53,9 @@ class MinimalPurchasePostCode extends Module
 
     public function install()
     {
-        return parent::install() && $this->registerHook('overrideMinimalPurchasePrice');
+        return parent::install()
+            && $this->registerHook('header')
+            && $this->registerHook('displayAfterCarrier');
     }
 
     public function uninstall()
@@ -71,10 +73,9 @@ class MinimalPurchasePostCode extends Module
         }
         $this->context->smarty->assign('module_dir', $this->_path);
         $this->context->smarty->assign('support_url', $this->support_url);
-        $this->context->smarty->assign('cron_url', Tools::getProtocol(Tools::usingSecureMode()) . $_SERVER['HTTP_HOST'] . $this->getPathUri() . 'cron.php');
         $output = $this->message .
-            $this->renderConfigForm() /*.
-            $this->context->smarty->fetch($this->local_path . 'views/templates/admin/support.tpl')*/
+            $this->renderConfigForm() .
+            $this->context->smarty->fetch($this->local_path . 'views/templates/admin/support.tpl')
         ;
         return $output;
     }
@@ -106,6 +107,8 @@ class MinimalPurchasePostCode extends Module
         // Form values
         $helper->fields_value = array(
             'minimalpurchasepostcode_rules' => $this->convertRulesFromJsonToText(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES')),
+            'minimalpurchasepostcode_withtaxes' => Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES'),
+            'minimalpurchasepostcode_skipforfreeshipping' => Configuration::get('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING'),
         );
         return $helper->generateForm(array($this->getConfigForm()));
     }
@@ -134,6 +137,42 @@ class MinimalPurchasePostCode extends Module
                             $this->l('42* 70') . '<br/>' .
                             $this->l('...') . '<br/>' .
                             $this->l('If the customer postal code matches many rules, the last rule will be applied') . '<br/>',
+                    ),
+                    array(
+                        'name' => 'minimalpurchasepostcode_withtaxes',
+                        'type' => 'switch',
+                        'label' => $this->l('With taxes'),
+                        'is_bool' => true,
+                        'values' => array(
+                            array(
+                                'id' => 'withtaxes_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled'),
+                            ),
+                            array(
+                                'id' => 'withtaxes_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled'),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'name' => 'minimalpurchasepostcode_skipforfreeshipping',
+                        'type' => 'switch',
+                        'label' => $this->l('Skip minimal purchase price for free shipping carriers'),
+                        'is_bool' => true,
+                        'values' => array(
+                            array(
+                                'id' => 'skipforfreeshipping_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled'),
+                            ),
+                            array(
+                                'id' => 'skipforfreeshipping_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled'),
+                            ),
+                        ),
                     ),
                 ),
                 'submit' => array(
@@ -180,9 +219,11 @@ class MinimalPurchasePostCode extends Module
             }
         }
         if (!$error) {
-            $message .= $this->l('The minimal purchase price rules by postcode have been saved.');
+            $message = $this->l('The minimal purchase price rules by postcode have been saved.');
             $this->setSuccessMessage($message);
             Configuration::updateValue('MINIMALPURCHASEPOSTCODE_RULES', $this->convertRulesFromTextToJson($rulesText));
+            Configuration::updateValue('MINIMALPURCHASEPOSTCODE_WITHTAXES', Tools::getValue('minimalpurchasepostcode_withtaxes'));
+            Configuration::updateValue('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING', Tools::getValue('minimalpurchasepostcode_skipforfreeshipping'));
         }
     }
 
@@ -236,29 +277,49 @@ class MinimalPurchasePostCode extends Module
     {
         $rulesArray = json_decode($rulesJson);
         $rulesText = '';
-        foreach ($rulesArray as $rule) {
-            if ($rulesText != '') {
-                $rulesText .= "\n";
+        if (is_array($rulesArray)) {
+            foreach ($rulesArray as $rule) {
+                if ($rulesText != '') {
+                    $rulesText .= "\n";
+                }
+                $rulesText .= $rule->postcode . ' ' . $rule->minimalPurchase;
             }
-            $rulesText .= $rule->postcode . ' ' . $rule->minimalPurchase;
         }
         return $rulesText;
     }
 
     /**
-     * Hook to override the minimal purchase price
+     * Hook to add front CSS
+     * @param $params
+     */
+    public function hookHeader($params)
+    {
+        $this->context->controller->addCSS($this->local_path . 'views/css/front.css', 'all');
+    }
+
+    /**
+     * Hook to display message after carriers list
      * @param $args
      */
-    public function hookOverrideMinimalPurchasePrice(&$args)
+    public function hookDisplayAfterCarrier(&$args)
     {
         if (isset($args['cart']) && $args['cart']->id_address_delivery != 0) {
+            $cart = $args['cart'];
             $rules = json_decode(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES'));
-            $address = new Address($args['cart']->id_address_delivery);
+            $withTaxes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES');
+            $address = new Address($cart->id_address_delivery);
+            $minimalPurchase = 0;
             foreach ($rules as $rule) {
                 if (fnmatch($rule->postcode, $address->postcode)) {
-                    $currency = Currency::getCurrency((int)$args['cart']->id_currency);
-                    $args['minimalPurchase'] = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+                    $currency = Currency::getCurrency((int)$cart->id_currency);
+                    $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
                 }
+            }
+            $cartTotal = $cart->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
+            if ($cartTotal < $minimalPurchase) {
+                $message = $this->l('A minimum shopping cart total of %s is required to have other carriers available. Current cart total is %s.');
+                $this->context->smarty->assign('message', sprintf($message, Tools::displayPrice($minimalPurchase, $currency), Tools::displayPrice($cartTotal, $currency)));
+                return $this->context->smarty->fetch($this->local_path . 'views/templates/hook/display-after-carrier.tpl');
             }
         }
     }
