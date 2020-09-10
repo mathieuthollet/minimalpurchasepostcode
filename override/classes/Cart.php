@@ -49,7 +49,8 @@ class Cart extends CartCore
             $cartTotal = $this->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
             foreach ($list as &$adresse) {
                 foreach ($adresse as $id_option => &$option) {
-                    if (!$option['is_free'] || !$skipForFreeShipping) {
+                    $carrier = reset($option['carrier_list'])['instance'];
+                    if (!($carrier->is_free && $option['is_free']) || !$skipForFreeShipping) {
                         if ($cartTotal < $minimalPurchase) {
                             unset($adresse[$id_option]);
                         }
