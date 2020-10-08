@@ -40,10 +40,12 @@ class Cart extends CartCore
             $withTaxes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES');
             $address = new Address($this->id_address_delivery);
             $minimalPurchase = 0;
-            foreach ($rules as $rule) {
-                if (fnmatch($rule->postcode, $address->postcode)) {
-                    $currency = Currency::getCurrency((int)$this->id_currency);
-                    $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+            if (is_array($rules)) {
+                foreach ($rules as $rule) {
+                    if (fnmatch($rule->postcode, $address->postcode)) {
+                        $currency = Currency::getCurrency((int)$this->id_currency);
+                        $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+                    }
                 }
             }
             $cartTotal = $this->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
