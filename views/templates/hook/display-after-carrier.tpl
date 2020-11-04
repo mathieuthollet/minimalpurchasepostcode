@@ -24,5 +24,5 @@
 *}
 
 <div class="minimal-purchase-postcode-message">
-    {$message}
+    {$message|escape:'htmlall':'UTF-8'}
 </div>
