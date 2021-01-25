@@ -34,27 +34,29 @@ class Cart extends CartCore
     public function getDeliveryOptionList(Country $default_country = null, $flush = false)
     {
         $list = parent::getDeliveryOptionList($default_country, $flush);
-        if ($this->id_address_delivery != 0) {
-            $rules = json_decode(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES'));
-            $skipForFreeShipping = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING');
-            $withTaxes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES');
-            $address = new Address($this->id_address_delivery);
-            $minimalPurchase = 0;
-            if (is_array($rules)) {
-                foreach ($rules as $rule) {
-                    if (fnmatch($rule->postcode, $address->postcode)) {
-                        $currency = Currency::getCurrency((int)$this->id_currency);
-                        $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+        if (Module::isEnabled('minimalpurchasepostcode')) {
+            if ($this->id_address_delivery != 0) {
+                $rules = json_decode(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES'));
+                $skipForFreeShipping = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING');
+                $withTaxes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES');
+                $address = new Address($this->id_address_delivery);
+                $minimalPurchase = 0;
+                if (is_array($rules)) {
+                    foreach ($rules as $rule) {
+                        if (fnmatch($rule->postcode, $address->postcode)) {
+                            $currency = Currency::getCurrency((int)$this->id_currency);
+                            $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+                        }
                     }
                 }
-            }
-            $cartTotal = $this->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
-            foreach ($list as &$adresse) {
-                foreach ($adresse as $id_option => &$option) {
-                    $carrier = reset($option['carrier_list'])['instance'];
-                    if (!($carrier->is_free && $option['is_free']) || !$skipForFreeShipping) {
-                        if ($cartTotal < $minimalPurchase) {
-                            unset($adresse[$id_option]);
+                $cartTotal = $this->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
+                foreach ($list as &$adresse) {
+                    foreach ($adresse as $id_option => &$option) {
+                        $carrier = reset($option['carrier_list'])['instance'];
+                        if (!($carrier->is_free && $option['is_free']) || !$skipForFreeShipping) {
+                            if ($cartTotal < $minimalPurchase) {
+                                unset($adresse[$id_option]);
+                            }
                         }
                     }
                 }
