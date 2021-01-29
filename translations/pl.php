@@ -19,7 +19,7 @@ $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_15c8121f6
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_58f0259ca238102db8e1b62756acb8aa'] = 'dany.';
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_1b21f29f2db330cdf1ef6981892c50f4'] = 'Cena powinna być numeryczna';
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_2e37fa8102514a34301acd72d5991dcb'] = 'Zasady minimalnej ceny zakupu według kodu pocztowego zostały zapisane.';
-$_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_377f6dbe07bfc47b1b4922215e5c488b'] = 'Minimalna suma koszyka na zakupy w wysokości% s jest wymagana, aby mieć dostępnych innych przewoźników. Bieżąca suma koszyka to% s. ';
+$_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_377f6dbe07bfc47b1b4922215e5c488b'] = 'Minimalna suma koszyka na zakupy w wysokości %s jest wymagana, aby mieć dostępnych innych przewoźników. Bieżąca suma koszyka to %s. ';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_db5eb84117d06047c97c9a0191b5fffe'] = 'Wsparcie';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_8b378b32651e8ddb6f19a9cb8dad9456'] = 'Jeśli masz jakieś pytanie, zgłoszenie błędu lub sugestie dotyczące ulepszenia mojego modułu, skontaktuj się ze mną:';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_bebb41e5e32c868f1eb0e4439a2d3ee9'] = 'Zrobię co w mojej mocy, aby pomóc Ci z Twoim modułem.';

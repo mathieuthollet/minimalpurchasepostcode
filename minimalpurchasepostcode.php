@@ -39,7 +39,7 @@ class MinimalPurchasePostCode extends Module
     {
         $this->name = 'minimalpurchasepostcode';
         $this->tab = 'checkout';
-        $this->version = '1.0.4';
+        $this->version = '1.0.5';
         $this->author = 'Mathieu Thollet';
         $this->need_instance = 0;
         $this->bootstrap = true;

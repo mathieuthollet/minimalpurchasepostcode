@@ -19,7 +19,7 @@ $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_15c8121f6
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_58f0259ca238102db8e1b62756acb8aa'] = 'dado.';
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_1b21f29f2db330cdf1ef6981892c50f4'] = 'El precio debe ser numérico';
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_2e37fa8102514a34301acd72d5991dcb'] = 'Se han guardado las reglas de precio mínimo de compra por código postal.';
-$_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_377f6dbe07bfc47b1b4922215e5c488b'] = 'Se requiere un total mínimo del carrito de compras de% s para tener otros proveedores disponibles. El total del carrito actual es% s. ';
+$_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_377f6dbe07bfc47b1b4922215e5c488b'] = 'Se requiere un total mínimo del carrito de compras de %s para tener otros proveedores disponibles. El total del carrito actual es %s. ';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_db5eb84117d06047c97c9a0191b5fffe'] = 'Soporte';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_8b378b32651e8ddb6f19a9cb8dad9456'] = 'Si tiene alguna pregunta o informe de error, o sugerencias para mejorar mi módulo, contácteme:';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_bebb41e5e32c868f1eb0e4439a2d3ee9'] = 'Haré todo lo posible para ayudarlo con su módulo.';

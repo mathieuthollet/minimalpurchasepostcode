@@ -19,7 +19,7 @@ $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_15c8121f6
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_58f0259ca238102db8e1b62756acb8aa'] = 'gegeven.';
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_1b21f29f2db330cdf1ef6981892c50f4'] = 'Prijs moet numeriek zijn';
 $_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_2e37fa8102514a34301acd72d5991dcb'] = 'De minimale aankoopprijsregels per postcode zijn opgeslagen.';
-$_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_377f6dbe07bfc47b1b4922215e5c488b'] = 'Een minimum totaal van% s in het winkelwagentje is vereist om andere vervoerders beschikbaar te hebben. Het huidige totaal van de winkelwagen is% s. ';
+$_MODULE['<{minimalpurchasepostcode}prestashop>minimalpurchasepostcode_377f6dbe07bfc47b1b4922215e5c488b'] = 'Een minimum totaal van %s in het winkelwagentje is vereist om andere vervoerders beschikbaar te hebben. Het huidige totaal van de winkelwagen is %s. ';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_db5eb84117d06047c97c9a0191b5fffe'] = 'Ondersteuning';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_8b378b32651e8ddb6f19a9cb8dad9456'] = 'Als je een vraag of bugrapport hebt, of suggesties om mijn module te verbeteren, neem dan contact met mij op:';
 $_MODULE['<{minimalpurchasepostcode}prestashop>support_bebb41e5e32c868f1eb0e4439a2d3ee9'] = 'Ik zal mijn best doen om je te helpen met je module.';
