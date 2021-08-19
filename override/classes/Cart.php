@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2020 PrestaShop
+ * 2007-2021 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA
+ * @copyright 2007-2021 PrestaShop SA
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
@@ -39,11 +39,14 @@ class Cart extends CartCore
                 $rules = json_decode(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES'));
                 $skipForFreeShipping = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING');
                 $withTaxes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES');
+                $blockOtherPostcodes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_BLOCKOTHERPOSTCODES');
                 $address = new Address($this->id_address_delivery);
                 $minimalPurchase = 0;
+                $postcodeMatched = false;
                 if (is_array($rules)) {
                     foreach ($rules as $rule) {
                         if (fnmatch($rule->postcode, $address->postcode)) {
+                            $postcodeMatched = true;
                             $currency = Currency::getCurrency((int)$this->id_currency);
                             $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
                         }
@@ -54,7 +57,7 @@ class Cart extends CartCore
                     foreach ($adresse as $id_option => &$option) {
                         $carrier = reset($option['carrier_list'])['instance'];
                         if (!($carrier->is_free && $option['is_free']) || !$skipForFreeShipping) {
-                            if ($cartTotal < $minimalPurchase) {
+                            if ($cartTotal < $minimalPurchase || $blockOtherPostcodes && !$postcodeMatched) {
                                 unset($adresse[$id_option]);
                             }
                         }

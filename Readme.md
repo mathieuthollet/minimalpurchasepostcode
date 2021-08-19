@@ -14,7 +14,9 @@ Choose the file "minimalpurchasepostcode.zip" and click on "Upload this module".
 * Enter the minimum purchase by postal code rules. You can use wildcard character "*" so you don't have to enter all postcodes
 * Choose if the price calculation is with or without taxes
 * Choose if you want to skip minimal purchase price for free shipping carriers
+* Choose if you want to block postcodes not matched with rules list
 * You can change the message displayed when cart total is under minimum purchase total in prestashop translations
+* You can change the message displayed when postcode is blocked in prestashop translations
 
 # Support
 If you have any question or bug report, or suggestions to improve my module, contact me : https://addons.prestashop.com/contact-form.php?id_product=47869  

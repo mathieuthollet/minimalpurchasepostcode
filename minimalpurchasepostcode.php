@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2020 PrestaShop
+ * 2007-2021 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA
+ * @copyright 2007-2021 PrestaShop SA
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
@@ -39,7 +39,7 @@ class MinimalPurchasePostCode extends Module
     {
         $this->name = 'minimalpurchasepostcode';
         $this->tab = 'checkout';
-        $this->version = '1.0.5';
+        $this->version = '1.1.0';
         $this->author = 'Mathieu Thollet';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -75,8 +75,7 @@ class MinimalPurchasePostCode extends Module
         $this->context->smarty->assign('support_url', $this->support_url);
         $output = $this->message .
             $this->renderConfigForm() .
-            $this->context->smarty->fetch($this->local_path . 'views/templates/admin/support.tpl')
-        ;
+            $this->context->smarty->fetch($this->local_path . 'views/templates/admin/support.tpl');
         return $output;
     }
 
@@ -109,6 +108,7 @@ class MinimalPurchasePostCode extends Module
             'minimalpurchasepostcode_rules' => $this->convertRulesFromJsonToText(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES')),
             'minimalpurchasepostcode_withtaxes' => Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES'),
             'minimalpurchasepostcode_skipforfreeshipping' => Configuration::get('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING'),
+            'minimalpurchasepostcode_blockotherpostcodes' => Configuration::get('MINIMALPURCHASEPOSTCODE_BLOCKOTHERPOSTCODES'),
         );
         return $helper->generateForm(array($this->getConfigForm()));
     }
@@ -174,6 +174,24 @@ class MinimalPurchasePostCode extends Module
                             ),
                         ),
                     ),
+                    array(
+                        'name' => 'minimalpurchasepostcode_blockotherpostcodes',
+                        'type' => 'switch',
+                        'label' => $this->l('Block postcodes not matched with rules list'),
+                        'is_bool' => true,
+                        'values' => array(
+                            array(
+                                'id' => 'blockotherpostcodes_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled'),
+                            ),
+                            array(
+                                'id' => 'blockotherpostcodes_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled'),
+                            ),
+                        ),
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
@@ -224,6 +242,7 @@ class MinimalPurchasePostCode extends Module
             Configuration::updateValue('MINIMALPURCHASEPOSTCODE_RULES', $this->convertRulesFromTextToJson($rulesText));
             Configuration::updateValue('MINIMALPURCHASEPOSTCODE_WITHTAXES', Tools::getValue('minimalpurchasepostcode_withtaxes'));
             Configuration::updateValue('MINIMALPURCHASEPOSTCODE_SKIPFORFREESHIPPING', Tools::getValue('minimalpurchasepostcode_skipforfreeshipping'));
+            Configuration::updateValue('MINIMALPURCHASEPOSTCODE_BLOCKOTHERPOSTCODES', Tools::getValue('minimalpurchasepostcode_blockotherpostcodes'));
         }
     }
 
@@ -307,10 +326,13 @@ class MinimalPurchasePostCode extends Module
             $cart = $args['cart'];
             $rules = json_decode(Configuration::get('MINIMALPURCHASEPOSTCODE_RULES'));
             $withTaxes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_WITHTAXES');
+            $blockOtherPostcodes = (bool)Configuration::get('MINIMALPURCHASEPOSTCODE_BLOCKOTHERPOSTCODES');
             $address = new Address($cart->id_address_delivery);
             $minimalPurchase = 0;
+            $postcodeMatched = false;
             foreach ($rules as $rule) {
                 if (fnmatch($rule->postcode, $address->postcode)) {
+                    $postcodeMatched = true;
                     $currency = Currency::getCurrency((int)$cart->id_currency);
                     $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
                 }
@@ -318,6 +340,10 @@ class MinimalPurchasePostCode extends Module
             $cartTotal = $cart->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
             if ($cartTotal < $minimalPurchase) {
                 $message = $this->l('A minimum shopping cart total of %s is required to have other carriers available. Current cart total is %s.');
+                $this->context->smarty->assign('message', sprintf($message, Tools::displayPrice($minimalPurchase, $currency), Tools::displayPrice($cartTotal, $currency)));
+                return $this->context->smarty->fetch($this->local_path . 'views/templates/hook/display-after-carrier.tpl');
+            } elseif ($blockOtherPostcodes && !$postcodeMatched) {
+                $message = $this->l('Order cannot be delivered to your postcode.');
                 $this->context->smarty->assign('message', sprintf($message, Tools::displayPrice($minimalPurchase, $currency), Tools::displayPrice($cartTotal, $currency)));
                 return $this->context->smarty->fetch($this->local_path . 'views/templates/hook/display-after-carrier.tpl');
             }
