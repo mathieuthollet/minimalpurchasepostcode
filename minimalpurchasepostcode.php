@@ -39,8 +39,8 @@ class MinimalPurchasePostCode extends Module
     {
         $this->name = 'minimalpurchasepostcode';
         $this->tab = 'checkout';
-        $this->version = '1.1.0';
-        $this->author = 'Mathieu Thollet';
+        $this->version = '1.1.1';
+        $this->author = 'AWebVision';
         $this->need_instance = 0;
         $this->bootstrap = true;
         $this->module_key = '761116d5a9a1e3f97cba1ce82d8ba11c';
@@ -330,11 +330,13 @@ class MinimalPurchasePostCode extends Module
             $address = new Address($cart->id_address_delivery);
             $minimalPurchase = 0;
             $postcodeMatched = false;
-            foreach ($rules as $rule) {
-                if (fnmatch($rule->postcode, $address->postcode)) {
-                    $postcodeMatched = true;
-                    $currency = Currency::getCurrency((int)$cart->id_currency);
-                    $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+            if (is_array($rules)) {
+                foreach ($rules as $rule) {
+                    if (fnmatch($rule->postcode, $address->postcode)) {
+                        $postcodeMatched = true;
+                        $currency = Currency::getCurrency((int)$cart->id_currency);
+                        $minimalPurchase = Tools::convertPrice((float)$rule->minimalPurchase, $currency);
+                    }
                 }
             }
             $cartTotal = $cart->getOrderTotal($withTaxes, Cart::ONLY_PRODUCTS);
