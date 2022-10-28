@@ -30,7 +30,7 @@ if (!defined('_PS_VERSION_')) {
 
 class MinimalPurchasePostCode extends Module
 {
-    private $message = '';
+    public $message = '';
 
     protected $config_form = false;
     protected $support_url = 'https://addons.prestashop.com/contact-form.php?id_product=47869';
@@ -39,7 +39,7 @@ class MinimalPurchasePostCode extends Module
     {
         $this->name = 'minimalpurchasepostcode';
         $this->tab = 'checkout';
-        $this->version = '1.1.1';
+        $this->version = '1.1.2';
         $this->author = 'AWebVision';
         $this->need_instance = 0;
         $this->bootstrap = true;
